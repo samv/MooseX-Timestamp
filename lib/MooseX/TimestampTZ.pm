@@ -156,13 +156,7 @@ sub epoch {
 	return time unless @_;
 	my $timestamptz = shift;
 	my ($timestamp, $zone) =
-		($timestamptz =~ m{^(\d{4}-\d{1,2}-\d{1,2}T?\s*
-					   (?:\d{1,2}
-						   (?::\d{1,2}
-							   (?::\d{2})?
-						   )?
-					   )?)
-				   ([\-+]\d{2}(?::?\d{2})?|Z)$}x)
+		($timestamptz =~ m{^(.*)([\-+]\d{2}(?::?\d{2})?|Z)$}x)
 		or die "bad TimestampTZ passed to epoch: '$timestamptz'";
 	my @wct = posixtime($timestamp);
 	my $offset_s = offset_s($zone);

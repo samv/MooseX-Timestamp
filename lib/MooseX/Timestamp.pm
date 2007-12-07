@@ -95,13 +95,15 @@ sub valid_posixtime {
 
 sub posixtime {
 	return localtime time unless @_;
-	my @lt = ($_[0] =~ m{^(\d{4})-(\d{1,2})-(\d{1,2})T?
+	my @lt = ($_[0] =~ m{^(\d{4})(-\d{1,2}|\d{2})(-\d{1,2}|\d{2})T?
 			     \s*(?:(\d{1,2})
 				     (?::(\d{2})
 					     (?::(\d{2}))?
 				     )?
 			     )?$}x)
 		or croak "bad timestamp '$_[0]'";
+	$lt[1]=abs($lt[1]);
+	$lt[2]=abs($lt[2]);
 	$lt[0]-=1900;
 	$lt[1]--;
 	$_ ||= 0 for (@lt[3..5]);

@@ -245,10 +245,10 @@ Example valid forms:
   2007-12-07 04Z
   2007-12-7T4Z
   2007-12-7+12
+  2007120704:12:32    # Date::Manip format
 
 Examples of ISO-8601 valid forms which are not currently accepted:
 
-  2007120704:12:32    # Date::Manip format
   07-12-07Z
   071207Z
   20071207Z           # seperators required

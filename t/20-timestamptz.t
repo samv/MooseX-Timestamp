@@ -118,7 +118,6 @@ $obj->stamp("1970-1-1Z");
 is(epoch($obj->stamp), 0, "magic");
 
 {
-	local($TODO) = "Date::Manip format not yet accepted";
 	eval{ $obj->stamp("2007010112:34:56") };
 	is($@, "", "Handles Date::Manip format");
 }

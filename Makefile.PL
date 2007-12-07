@@ -9,6 +9,5 @@ license         ("perl");
 requires        ("perl" => 5.006);
 requires        ("Moose" => 0.32);
 requires        ("Sub::Exporter");
-include         ("Test::Depends");
 
 &WriteAll;

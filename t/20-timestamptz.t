@@ -124,11 +124,23 @@ is(epoch($obj->stamp), 0, "magic");
 
 my $boom;
 { no warnings 'redefine';
-  *MooseX::TimestampTZ::epoch=sub { $boom = 1; undef };
+  my $old_epoch = \&MooseX::TimestampTZ::epoch;
+  *MooseX::TimestampTZ::epoch=sub { $boom ++; $old_epoch->(@_) };
 }
 
-eval{ $obj->epoch("2007010112") };
-unlike($@, qr{boom}, "shouldn't go boom");
+$obj->epoch(2007010112);
+use Scalar::Util qw(dualvar);
+
+$obj->epoch("2007010112");
+is($boom, undef, "shouldn't go boom");
+undef($boom);
 is($obj->epoch, 2007010112, "Prefers Str -> Int -> time_t to checking TimestampTZ");
 $obj->epoch("2007-01-01 12:34:56+1000");
-is($boom, 1, "knows how to call epoch");
+is($boom, 2, "knows how to call epoch");
+is($obj->epoch, 1167618896, "Set the right time");
+$obj->epoch("2007010112:34:56+0000");
+is($obj->epoch, 1167654896, "POK only");
+
+my $when = dualvar(2007010112, "2007010112:34:56+0000");
+$obj->epoch($when);
+is($obj->epoch, 1167654896, "IOK + POK");

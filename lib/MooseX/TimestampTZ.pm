@@ -166,11 +166,26 @@ sub epoch {
 subtype 'time_t'
 	=> as "Int";
 
+sub _looks_like_timestamp {
+	my $epoch;
+	if ( eval { defined($epoch = epoch($_)) } and !$@ ) {
+		$epoch;
+	}
+	elsif ( eval { valid_posixtime(posixtime($_)) } and !$@ ) {
+		timelocal(posixtime($_));
+	}
+	else {
+		croak "bad TimestampTZ $_";
+	}
+}
+
 coerce 'time_t'
-	#=> from "Int"
-	#=> via { $_ },
+	=> from "Int"
+	=> via { $_ },
 	=> from "TimestampTZ"
-	=> via { epoch($_) };
+	=> via { epoch($_) }
+	=> from "Str"
+	=> via \&_looks_like_timestamp;
 
 coerce 'Timestamp'
 	=> from "TimestampTZ"
@@ -186,18 +201,7 @@ coerce 'TimestampTZ'
 	=> from "Timestamp"
 	=> via { timestamptz(timelocal(posixtime($_))) },
 	=> from "Str"
-	=> via {
-		my $epoch;
-		if ( eval { defined($epoch = epoch($_)) } and !$@ ) {
-			timestamptz($epoch);
-		}
-		elsif ( eval { valid_posixtime(posixtime($_)) } and !$@ ) {
-			timestamptz(timelocal(posixtime($_)));
-		}
-		else {
-			croak "bad TimestampTZ $_";
-		}
-	};
+	=> via { timestamptz _looks_like_timestamp };
 
 =head1 FUNCTIONS
 

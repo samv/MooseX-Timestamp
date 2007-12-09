@@ -121,3 +121,14 @@ is(epoch($obj->stamp), 0, "magic");
 	eval{ $obj->stamp("2007010112:34:56") };
 	is($@, "", "Handles Date::Manip format");
 }
+
+my $boom;
+{ no warnings 'redefine';
+  *MooseX::TimestampTZ::epoch=sub { $boom = 1; undef };
+}
+
+eval{ $obj->epoch("2007010112") };
+unlike($@, qr{boom}, "shouldn't go boom");
+is($obj->epoch, 2007010112, "Prefers Str -> Int -> time_t to checking TimestampTZ");
+$obj->epoch("2007-01-01 12:34:56+1000");
+is($boom, 1, "knows how to call epoch");

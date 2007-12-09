@@ -167,6 +167,8 @@ subtype 'time_t'
 	=> as "Int";
 
 coerce 'time_t'
+	#=> from "Int"
+	#=> via { $_ },
 	=> from "TimestampTZ"
 	=> via { epoch($_) };
 

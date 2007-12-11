@@ -1,5 +1,11 @@
+2007-12-12  Sam Vilain  <sam@vilain.net>
+
+	* MooseX::Timestamp 0.03
+	* fix tests for non-GNU/non-Olson strftime()
+
 2007-12-09  Sam Vilain  <sam@vilain.net>
 
+	* MooseX::Timestamp 0.02
 	* prove that Int -> time_t doesn't call epoch()
 	* allow time_t attributes to coerce from 'marginal' timestamps
 

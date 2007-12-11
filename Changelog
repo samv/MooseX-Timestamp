@@ -1,5 +1,12 @@
 2007-12-12  Sam Vilain  <sam@vilain.net>
 
+	* MooseX::Timestamp 0.04
+	* Fix zone() function for offsets negative of GMT
+	* Rely yet again less on POSIX::strftime() in the test suite
+	* Fix another bad test.
+
+2007-12-12  Sam Vilain  <sam@vilain.net>
+
 	* MooseX::Timestamp 0.03
 	* fix tests for non-GNU/non-Olson strftime()
 

@@ -71,6 +71,7 @@ isnt($@, "", "still detect invalid dates")
 is(zone(0), "+0000", "zone(0)");
 is(zone(0,1), "Z", "zone(0,1)");
 is(zone(12*3600), "+1200", "zone(43200)");
+is(zone(-12*3600), "-1200", "zone(-43200)");
 
 is(offset_s("Z"), 0, "offset_s('Z')");
 is(offset_s("+1200"), 43200, "offset_s(+1200)");

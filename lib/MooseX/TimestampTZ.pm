@@ -115,7 +115,7 @@ sub zone {
 	}
 	else {
 		my $hh = sprintf("%.2d", int(abs($offset_s)/3600));
-		my $mm = sprintf("%.2d", int(($offset_s-$hh*3600)/60));
+		my $mm = sprintf("%.2d", int((abs($offset_s)-$hh*3600)/60));
 		my $s = ( $offset_s >= 0 ? "+" : "-" );
 		"$s$hh$mm";
 	}

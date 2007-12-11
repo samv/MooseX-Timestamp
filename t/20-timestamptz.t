@@ -57,7 +57,7 @@ isnt($@, "", "Gibbons is not a valid time zone")
 	or diag("interpreted as: ".$obj->stamp);
 
 $obj->stamp("2007010212");
-like($obj->stamp, qr{2033-08-0[78] \d+:\d+:12[\-+]\d+},
+like($obj->stamp, qr{2033-08-0[67] \d+:\d+:12[\-+]\d+},
      "no delimiters - interpreted as epoch");
 
 $obj->stamp("2007-01-0212");
@@ -76,7 +76,6 @@ is(zone(-12*3600), "-1200", "zone(-43200)");
 is(offset_s("Z"), 0, "offset_s('Z')");
 is(offset_s("+1200"), 43200, "offset_s(+1200)");
 is(offset_s("+12"), 43200, "offset_s(+12)");
-is(offset_s("-10"), -36000, "offset_s(-10)");
 
 like(gmtimestamptz,
      qr{2\d{3}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[\-+]\d{4}$},

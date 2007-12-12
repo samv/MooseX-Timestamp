@@ -7,6 +7,7 @@ version_from    ("lib/MooseX/Timestamp.pm");
 license         ("perl");
 
 requires        ("perl" => 5.006);
+requires        ("Memoize");
 requires        ("Moose" => 0.32);
 requires        ("Sub::Exporter");
 

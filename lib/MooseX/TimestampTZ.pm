@@ -29,6 +29,8 @@ MooseX::Timestamp - simple timestamp type for Moose, with Time Zone
  print epoch "1970-01-01 00:00:00+0000"; # 0
  print epoch "1970-01-01 12:00:00+1200"; # 0
 
+ print for epochtz "1970-01-01 12:00:00+1200"; # 0, 43200
+
  # you can get these ISO forms if you want, too.  functions
  # that take a timestamptz accept either
  package SomewhereElse;
@@ -82,7 +84,7 @@ sub _curry {
 
 use Sub::Exporter -setup =>
 	{ exports =>
-	  [ qw(offset_s epoch timestamp posixtime),
+	  [ qw(offset_s epoch timestamp posixtime epochtz),
 	    map { ($_ => \&_curry) } qw(zone timestamptz gmtimestamptz),
 	  ],
 	  groups =>
@@ -152,15 +154,19 @@ sub gmtimestamptz {
 	timestamp(@gt).zone(0, $use_z);
 }
 
-sub epoch {
-	return time unless @_;
-	my $timestamptz = shift;
+sub epochtz {
+	my $timestamptz = shift || timestamptz;
 	my ($timestamp, $zone) =
 		($timestamptz =~ m{^(.*)([\-+]\d{2}(?::?\d{2})?|Z)$}x)
 		or die "bad TimestampTZ passed to epoch: '$timestamptz'";
 	my @wct = posixtime($timestamp);
 	my $offset_s = offset_s($zone);
-	timegm(@wct) - $offset_s;
+	(timegm(@wct) - $offset_s, $offset_s);
+}
+
+sub epoch {
+	return time unless @_;
+	return (epochtz(@_))[0];
 }
 
 subtype 'time_t'
@@ -263,6 +269,10 @@ Examples of ISO-8601 valid forms which are not currently accepted:
 
 No locale-specific date forms, such as C</> delimited dates, are
 accepted.
+
+=head2 epochtz(...)
+
+Just like C<epoch()>, except returns the timezone as well.
 
 =head1 TYPES AND COERCIONS
 

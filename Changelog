@@ -1,3 +1,8 @@
+2008-08-11  Sam Vilain  <sam@vilain.net>
+
+	* MooseX::Timestamp 0.05
+	* add epochtz function
+
 2007-12-12  Sam Vilain  <sam@vilain.net>
 
 	* MooseX::Timestamp 0.04

@@ -57,7 +57,7 @@ isnt($@, "", "Gibbons is not a valid time zone")
 	or diag("interpreted as: ".$obj->stamp);
 
 $obj->stamp("2007010212");
-like($obj->stamp, qr{2033-08-0[78] \d+:\d+:12[\-+]\d+},
+like($obj->stamp, qr{2033-08-0[67] \d+:\d+:12[\-+]\d+},
      "no delimiters - interpreted as epoch");
 
 $obj->stamp("2007-01-0212");
@@ -71,11 +71,11 @@ isnt($@, "", "still detect invalid dates")
 is(zone(0), "+0000", "zone(0)");
 is(zone(0,1), "Z", "zone(0,1)");
 is(zone(12*3600), "+1200", "zone(43200)");
+is(zone(-12*3600), "-1200", "zone(-43200)");
 
 is(offset_s("Z"), 0, "offset_s('Z')");
 is(offset_s("+1200"), 43200, "offset_s(+1200)");
 is(offset_s("+12"), 43200, "offset_s(+12)");
-is(offset_s("-10"), -36000, "offset_s(-10)");
 
 like(gmtimestamptz,
      qr{2\d{3}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[\-+]\d{4}$},
@@ -84,6 +84,7 @@ like(gmtimestamptz,
 is(epoch("1970-01-01 00:01:00+0000"), 60, "epoch(+0000)");
 is(epoch("1970-01-01 00:01:01Z"), 61, "epoch(Z)");
 is(epoch("1970-01-01 12:01:02+12"), 62, "epoch(+12)");
+is( (epochtz("1970-01-01 12:01:02+12"))[1], 43200, "epochtz(+12)");
 
 $obj->stamp("2007-01-04 12:00:00+0143");
 is($obj->stamp, "2007-01-04 12:00:00+0143", "funny time zones OK");

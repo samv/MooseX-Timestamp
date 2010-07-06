@@ -19,8 +19,8 @@ like(timestamp,
      "timestamp()");
 
 use POSIX qw(strftime);
-is(strftime("%l:%M:%S%P %d/%m/%y", posixtime "2007-12-06 23:15"),
-   "11:15:00pm 06/12/07",
+is(strftime("%I:%M:%S %d/%m/%y", posixtime "2007-12-06 23:15"),
+   "11:15:00 06/12/07",
    "posixtime(Str)");
 
 like(timestamp(posixtime),

@@ -1,3 +1,9 @@
+2010-07-06  Sam Vilain  <sam@vilain.net>
+
+	* MooseX::Timestamp 0.06
+	* use epochtz function in TimestampTZ coerce rule to avoid losing
+	  timezone of passed-in values
+
 2008-08-11  Sam Vilain  <sam@vilain.net>
 
 	* MooseX::Timestamp 0.05

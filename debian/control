@@ -1,0 +1,23 @@
+Source: libmoosex-timestamp-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 5)
+Build-Depends-Indep: perl (>= 5.006)
+Maintainer: Sam Vilain <sam.vilain@catalyst.net.nz>
+Standards-Version: 3.8.0
+Homepage: http://search.cpan.org/dist/MooseX-Timestamp/
+
+Package: libmoosex-timestamp-perl
+Architecture: all
+Depends: perl (>= 5.006), ${misc:Depends}, libsub-exporter-perl, libmoose-perl (>= 0.32)
+Description: Timestamp subtypes for Moose classes
+ Tired of bulky date modules?  Don't put up with them any longer.
+ .
+ This module provides floating dates on the Gregorian calendar without
+ much code.  It operates in (one or two particular variants of)
+ ISO-8601 date format, and POSIX-style 6-number lists.
+ .
+ Note: you probably want the functions provided by MooseX::TimestampTZ
+ most of the time, as they deal in unix epoch times.
+ .
+ This description was automagically extracted from the module by dh-make-perl.

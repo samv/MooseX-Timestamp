@@ -173,15 +173,21 @@ subtype 'time_t'
 	=> as "Int";
 
 sub _looks_like_timestamp {
-	my $epoch;
-	if ( eval { defined($epoch = epoch($_)) } and !$@ ) {
-		$epoch;
+	my ($epoch, $off) = eval { epochtz $_ };
+	if ( defined $epoch ) {
 	}
 	elsif ( eval { valid_posixtime(posixtime($_)) } and !$@ ) {
-		timelocal(posixtime($_));
+		$epoch = timegm(posixtime($_));
+		$off = 0;
 	}
 	else {
 		croak "bad TimestampTZ $_";
+	}
+	if ( wantarray ) {
+		return ($epoch, $off);
+	}
+	else {
+		return $epoch;
 	}
 }
 
@@ -207,7 +213,10 @@ coerce 'TimestampTZ'
 	=> from "Timestamp"
 	=> via { timestamptz(timelocal(posixtime($_))) },
 	=> from "Str"
-	=> via { timestamptz _looks_like_timestamp };
+	=> via {
+		my ($epoch, $off) = _looks_like_timestamp;
+		timestamp(gmtime($epoch+$off)).zone($off);
+	};
 
 =head1 FUNCTIONS
 

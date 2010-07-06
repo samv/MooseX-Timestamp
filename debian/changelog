@@ -1,5 +1,11 @@
+libmoosex-timestamp-perl (0.06-1) lucid; urgency=low
+
+  * Update to new version
+
+ -- Sam Vilain <sam.vilain@catalyst.net.nz>  Tue, 06 Jul 2010 15:06:56 +1200
+
 libmoosex-timestamp-perl (0.05-1) unstable; urgency=low
 
   * Initial Release.
 
- -- Sam Vilain <sam.vilain@catalyst.net.nz>  Fri, 30 Apr 2010 14:45:41 +1200
+ -- Sam Vilain <sam.vilain@catalyst.net.nz>  Tue, 06 Jul 2010 15:05:56 +1200

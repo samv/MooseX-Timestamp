@@ -177,8 +177,11 @@ sub _looks_like_timestamp {
 	if ( defined $epoch ) {
 	}
 	elsif ( eval { valid_posixtime(posixtime($_)) } and !$@ ) {
-		$epoch = timegm(posixtime($_));
-		$off = 0;
+		my @gt = posixtime($_);
+		my $gmtime = timegm(@gt);
+		my $localtime = timelocal(@gt);
+		$epoch = $localtime;
+		$off = ($localtime - $gmtime);
 	}
 	else {
 		croak "bad TimestampTZ $_";
@@ -306,6 +309,9 @@ attribute declaration:
 With the above, if you set C<created> to a time_t value, it will
 automatically get converted into a TimestampTZ in the current time
 zone.
+
+B<New in 0.07>: Timestamp to TimestampTZ conversion now happens in
+I<local time>, not UTC.
 
 =head2 time_t
 

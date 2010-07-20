@@ -42,6 +42,8 @@ like(gmtimestamptz,
 		);
 }
 
+$ENV{TZ}="UTC"; # FIXME - these tests need this
+
 my $obj = MyClass->new(stamp => "2007-01-02 12:00:12"); # ok
 like($obj->stamp, qr{2007-01-02 12:00:12[\-+]\d+},
    "set value matching type constraint");

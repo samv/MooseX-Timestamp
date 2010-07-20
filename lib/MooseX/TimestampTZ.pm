@@ -7,7 +7,6 @@ MooseX::Timestamp - simple timestamp type for Moose, with Time Zone
 
 =head1 SYNOPSIS
 
- # specify importing, specifying
  use MooseX::TimestampTZ qw(:all);
 
  print zone 0;       # +0000

@@ -191,11 +191,11 @@ sub timestamptz {
 	my $time = shift;
 	defined($time)||($time = time);
 	my $use_z = shift;
-	my @lt = localtime($time);
+	my @lt = localtime(int($time));
+	my $offset_s = timegm(@lt) - int($time);
 	if ( int($time) != $time ) {
 		$lt[0] += $time - int($time);
 	}
-	my $offset_s = timegm(@lt) - $time;
 	timestamp(@lt).zone($offset_s, $use_z);
 }
 

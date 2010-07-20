@@ -50,5 +50,5 @@ $obj->stamp("2007-12-02T00:00:00.123456");
 is($obj->stamp, "2007-12-02 00:00:00.123456", "HiRes Stamp");
 
 $obj->stamptz("2007-12-02T00:00:00.123456");
-is($obj->stamptz, "2007-12-02 00:00:00.123456+0000", "HiRes StampTZ");
+like($obj->stamptz, qr/00\.123456[+\-]\d+$/, "HiRes StampTZ");
 

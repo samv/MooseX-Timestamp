@@ -2,7 +2,7 @@
 
 use Test::More no_plan;
 use strict;
-BEGIN { use_ok("MooseX::TimestampTZ", qw(:all)); }
+BEGIN { use_ok("MooseX::Types::TimestampTZ", qw(:all)); }
 
 ok(defined &timestamp, "imported 'timestamp'");
 
@@ -111,7 +111,7 @@ SKIP:{
 $obj->epoch($obj->stamp);
 is($obj->epoch, 1167905820, "TimestampTZ => epoch conversion");
 
-MooseX::TimestampTZ->import
+MooseX::Types::TimestampTZ->import
 	(gmtimestamptz => { use_z => 1,
 			    -as => "gmtz" });
 
@@ -132,8 +132,8 @@ is(epoch($obj->stamp), 0, "magic");
 
 my $boom;
 { no warnings 'redefine';
-  my $old_epoch = \&MooseX::TimestampTZ::epoch;
-  *MooseX::TimestampTZ::epoch=sub { $boom ++; $old_epoch->(@_) };
+  my $old_epoch = \&MooseX::Types::TimestampTZ::epoch;
+  *MooseX::Types::TimestampTZ::epoch=sub { $boom ++; $old_epoch->(@_) };
 }
 
 $obj->epoch(2007010112);

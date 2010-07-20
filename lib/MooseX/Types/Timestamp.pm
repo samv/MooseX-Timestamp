@@ -1,15 +1,15 @@
 
-package MooseX::Timestamp;
+package MooseX::Types::Timestamp;
 
 our $VERSION = '0.07';
 
 =head1 NAME
 
-MooseX::Timestamp - simple timestamp type for Moose
+MooseX::Types::Timestamp - simple timestamp type for Moose
 
 =head1 SYNOPSIS
 
- use MooseX::Timestamp;
+ use MooseX::Types::Timestamp;
 
  print timestamp;          # 2007-12-06 23:15:42
  print timestamp 0;        # 1970-01-01 12:00:00
@@ -45,7 +45,7 @@ This module provides floating dates on the Gregorian calendar without
 much code.  It operates in (one or two particular variants of)
 ISO-8601 date format, and POSIX-style 6-number lists.
 
-Note: you probably want the functions provided by MooseX::TimestampTZ
+Note: you probably want the functions provided by MooseX::Types::TimestampTZ
 most of the time, as they deal in unix epoch times.
 
 =cut
@@ -58,7 +58,7 @@ use Sub::Exporter -setup =>
 	};
 use Carp;
 
-#use MooseX::Timestamp::__version;
+#use MooseX::Types::Timestamp::__version;
 
 subtype Timestamp
     => as Str
@@ -141,7 +141,7 @@ coerce Timestamp
 The following functions are available for import.  If you want to
 import them all, use the C<:all> import group, as below:
 
-  use MooseX::Timestamp qw(:all);
+  use MooseX::Types::Timestamp qw(:all);
 
 =head2 timestamp(time_t $time = time())
 
@@ -187,7 +187,7 @@ Rules exist to coerce C<Str> objects to this type, and are available
 by using the C<coerce =E<gt> 1> flag on a Moose attribute declaration:
 
   package Widget;
-  use MooseX::Timestamp;
+  use MooseX::Types::Timestamp;
   has 'created' => (
           isa => Timestamp,
           is => "rw",
@@ -212,7 +212,7 @@ The default exporting action of this module is to export the
 C<posixtime> and C<timestamp> methods.  To avoid this, pass an empty
 argument list to the use statement:
 
-  use MooseX::Timestamp ();
+  use MooseX::Types::Timestamp ();
 
 =head1 BUGS
 

@@ -4,13 +4,13 @@ use Test::More no_plan;
 use strict;
 use warnings;
 
-BEGIN{ use_ok("MooseX::Timestamp", ":all") }
+BEGIN{ use_ok("MooseX::Types::Timestamp", ":all") }
 
 like(timestamp(0.001),
      qr{\.001$},
      "timestamp(frac)");
 
-BEGIN{ use_ok("MooseX::TimestampTZ", ":all", { hires => 1 }); }
+BEGIN{ use_ok("MooseX::Types::TimestampTZ", ":all", { hires => 1 }); }
 
 my $ts;
 my $hires_time = qr/\d+:\d+\.\d+/;
@@ -20,7 +20,7 @@ for (1..3) {
     last if $ts =~ m{$hires_time};
 }
 
-like( $ts, $hires_time, "Use MooseX::TimestampTZ with hires curry flag");
+like( $ts, $hires_time, "Use MooseX::Types::TimestampTZ with hires curry flag");
 
 my ($zone) = timestamptz(10.123) =~ m{([\+-]\d+)$};
 my ($zone2) = timestamptz(10) =~ m{([\+-]\d+)$};

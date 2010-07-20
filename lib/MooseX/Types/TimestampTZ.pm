@@ -1,13 +1,13 @@
 
-package MooseX::TimestampTZ;
+package MooseX::Types::TimestampTZ;
 
 =head1 NAME
 
-MooseX::Timestamp - simple timestamp type for Moose, with Time Zone
+MooseX::Types::Timestamp - simple timestamp type for Moose, with Time Zone
 
 =head1 SYNOPSIS
 
- use MooseX::TimestampTZ qw(:all);
+ use MooseX::Types::TimestampTZ qw(:all);
 
  print zone 0;       # +0000
  print zone 0, 1;    # Z
@@ -27,7 +27,7 @@ MooseX::Timestamp - simple timestamp type for Moose, with Time Zone
  # hires timestamps
  print tmtimestamptz 0.123;  # 1970-01-01 00:00:00.123+0000
 
- use MooseX::TimestampTZ ":all" => { hires => 1 };
+ use MooseX::Types::TimestampTZ ":all" => { hires => 1 };
  print tmtimestamptz;     #  2010-07-20 14:13:23.73418+1200
 
  # conversion the other way
@@ -39,7 +39,7 @@ MooseX::Timestamp - simple timestamp type for Moose, with Time Zone
  # you can get these ISO forms if you want, too.  functions
  # that take a timestamptz accept either
  package SomewhereElse;
- use MooseX::TimestampTZ gmtimestamptz => { use_z => 1 };
+ use MooseX::Types::TimestampTZ gmtimestamptz => { use_z => 1 };
  print gmtimestamptz 0;   # 1970-01-01 00:00:00Z
 
  package MyClass;
@@ -67,7 +67,7 @@ yet supported.
 use strict;
 use warnings;
 use Carp;
-use MooseX::Timestamp qw(:all);
+use MooseX::Types::Timestamp qw(:all);
 use Moose::Util::TypeConstraints;
 
 sub _curry {
@@ -300,7 +300,7 @@ coerce 'TimestampTZ'
 The following functions are available for import.  If you want to
 import them all, use the C<:all> import group, as below:
 
-  use MooseX::TimestampTZ qw(:all);
+  use MooseX::Types::TimestampTZ qw(:all);
 
 =head2 zone(Int $offset, Bool $use_z = false)
 
@@ -374,7 +374,7 @@ and are available by using the C<coerce =E<gt> 1> flag on a Moose
 attribute declaration:
 
   package Widget;
-  use MooseX::TimestampTZ;
+  use MooseX::Types::TimestampTZ;
   has 'created' =>
           isa => TimestampTZ,
           is => "rw",
@@ -394,7 +394,7 @@ I<local time>, not UTC.
 
 C<time_t> is a nicer way of writing an epoch time.  If you set
 C<coerce =E<gt> 1> on your accessors, then you can happily pass in
-timestamps.  As of MooseX::Timestamp 0.07, B<time_t> is a C<Num>, not
+timestamps.  As of MooseX::Types::Timestamp 0.07, B<time_t> is a C<Num>, not
 merely an C<Int>.
 
 =head1 EXPORTS
@@ -403,7 +403,7 @@ The default exporting action of this module is to export the
 C<timestamptz>, C<gmtimestamptz> and C<epoch> methods.  To avoid this,
 pass an empty argument list to the use statement:
 
-  use MooseX::TimestampTZ ();
+  use MooseX::Types::TimestampTZ ();
 
 =head2 ISO-8601 "Z" TIMEZONE
 
@@ -412,11 +412,11 @@ Several of the functions which return a timezone may be told to return
 pass a true second argument to any of the three functions (C<zone>,
 C<timestamptz> and C<gmtimestamptz>), or curry them on import;
 
- use MooseX::TimestampTZ qw(:default), defaults => { use_z => 1 };
+ use MooseX::Types::TimestampTZ qw(:default), defaults => { use_z => 1 };
 
 You can also curry individual functions like this:
 
- use MooseX::TimestampTZ zone => { use_z => 1 };
+ use MooseX::Types::TimestampTZ zone => { use_z => 1 };
 
 =cut
 

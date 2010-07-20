@@ -2,7 +2,7 @@
 
 use Test::More no_plan;
 use strict;
-BEGIN { use_ok("MooseX::Timestamp", qw(:all)); }
+BEGIN { use_ok("MooseX::Types::Timestamp", qw(:all)); }
 
 ok(defined &timestamp, "imported 'timestamp'");
 

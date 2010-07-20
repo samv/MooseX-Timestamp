@@ -83,6 +83,8 @@ sub timestamp {
 		strftime("%Y-%m-%d %H:%M:%S", @_ ),
 	}
 	else {
+		# microseconds only.  Any more and you start seeing FP
+		# precision weirdness a lot more than you'd expect.
 		my $sec = sprintf("%.6f", $_[0]);
 		$sec =~ s{0+$}{};
 		join(
@@ -199,6 +201,10 @@ by using the C<coerce =E<gt> 1> flag on a Moose attribute declaration:
 
 With the above, if you set C<created> to a value such as automatically
 get converted into a Timestamp in the current time zone.
+
+Timestamps may contain fractional components, but the results of
+conversions from floating point are truncated at the microsecond
+level.
 
 =head2 EXPORTS
 

@@ -1,3 +1,9 @@
+libmoosex-timestamp-perl (0.07-1) lucid; urgency=low
+
+  * Update to latest CPAN release
+
+ -- Sam Vilain <sam.vilain@catalyst.net.nz>  Tue, 20 Jul 2010 14:40:21 +1200
+
 libmoosex-timestamp-perl (0.06-1) lucid; urgency=low
 
   * Update to new version

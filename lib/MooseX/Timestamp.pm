@@ -13,6 +13,7 @@ MooseX::Timestamp - simple timestamp type for Moose
 
  print timestamp;          # 2007-12-06 23:15:42
  print timestamp 0;        # 1970-01-01 12:00:00
+ print timestamp 0.0001;   # 1970-01-01 12:00:00.0001
  print timestamp gmtime 0; # 1970-01-01 00:00:00
 
  use POSIX qw(strftime);
@@ -59,7 +60,7 @@ use Carp;
 subtype Timestamp
     => as Str
     => where {
-	    m{^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$} and
+	    m{^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$} and
 		    eval { valid_posixtime(posixtime($_)) };
     };
 
@@ -70,10 +71,24 @@ sub timestamp {
 	}
 	if ( @_ == 1 ) {
 		my $time = shift;
-		@_ = localtime($time);
+		my $frac = $time - int($time);
+		@_ = localtime(int($time));
+		$_[0] += $frac;
 	}
 	valid_posixtime(@_);
-	strftime("%Y-%m-%d %H:%M:%S", @_ );
+	if ( int($_[0]) == $_[0] ) {
+		strftime("%Y-%m-%d %H:%M:%S", @_ ),
+	}
+	else {
+		my $sec = sprintf("%.6f", $_[0]);
+		$sec =~ s{0+$}{};
+		join(
+			"",
+			strftime("%Y-%m-%d %H:%M:", @_ ),
+			($_[0]<10)?("0"):(),
+			$sec,
+		       );
+	}
 }
 
 my @short = qw(0 1 0 1 0 1 0 0 1 0 1 0);
@@ -89,7 +104,7 @@ sub valid_posixtime {
 	croak "invalid hour $lt[2]" if $lt[2]<0 or $lt[2]>23;
 	croak "invalid minute $lt[1]" if $lt[1]<0 or $lt[1]>59;
 	croak "invalid second $lt[0]"
-		if ($lt[0]<0 or $lt[0]>60 or ($lt[0]==60 and $lt[1]!=59));
+		if ($lt[0]<0 or $lt[0]>=61 or ($lt[0]>=60 and $lt[1]!=59));
 	1;
 }
 
@@ -98,7 +113,7 @@ sub posixtime {
 	my @lt = ($_[0] =~ m{^(\d{4})(-\d{1,2}|\d{2})(-\d{1,2}|\d{2})T?
 			     \s*(?:(\d{1,2})
 				     (?::(\d{2})
-					     (?::(\d{2}))?
+					     (?::(\d{2}(?:\.\d+)?))?
 				     )?
 			     )?$}x)
 		or croak "bad timestamp '$_[0]'";
@@ -107,7 +122,7 @@ sub posixtime {
 	$lt[0]-=1900;
 	$lt[1]--;
 	$_ ||= 0 for (@lt[3..5]);
-	reverse @lt;
+	reverse(@lt);
 }
 
 coerce Timestamp
@@ -135,7 +150,8 @@ as well.
 
 =head2 posixtime()
 
-Alias for the built-in C<localtime>
+Alias for the built-in C<localtime>; this will not return a hi-res
+time unless one is passed in.
 
 =head2 posixtime(Timestamp)
 

@@ -5,5 +5,5 @@ MANIFEST.SKIP
 ^.git
 ^blib/
 ^pm_to_blib$
-^[^/]*\.tar.\w+$
+^[^/]*\.tar(.\w+)?$
 debian/

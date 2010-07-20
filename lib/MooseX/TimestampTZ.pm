@@ -24,6 +24,12 @@ MooseX::Timestamp - simple timestamp type for Moose, with Time Zone
  print gmtimestamptz;     # 2007-12-06 10:23:22+0000
  print gmtimestamptz 0;   # 1970-01-01 00:00:00+0000
 
+ # hires timestamps
+ print tmtimestamptz 0.123;  # 1970-01-01 00:00:00.123+0000
+
+ use MooseX::TimestampTZ ":all" => { hires => 1 };
+ print tmtimestamptz;     #  2010-07-20 14:13:23.73418+1200
+
  # conversion the other way
  print epoch "1970-01-01 00:00:00+0000"; # 0
  print epoch "1970-01-01 12:00:00+1200"; # 0
@@ -70,20 +76,65 @@ sub _curry {
 	my $arg_h = shift;
 	my $col_h = shift;
 
+	my $chain = \&$name;
+
 	if ( defined $arg_h->{use_z} or defined $col_h->{defaults}{use_z} ) {
 		my $use_z = defined $arg_h->{use_z} ?
 			$arg_h->{use_z} : $col_h->{defaults}{use_z};
-		my $code = \&$name;
-		sub { $code->($_[0], $use_z) };
+		my $old_chain = $chain;
+		$chain = sub { $old_chain->($_[0], $use_z) };
 	}
-	else {
-		\&$name;
+
+	if ( defined $arg_h->{hires} or defined $col_h->{defaults}{hires} ) {
+		my $hires = defined $arg_h->{hires} ?
+			$arg_h->{hires} : $col_h->{defaults}{hires};
+		if ( $hires ) {
+			require Time::HiRes;
+			my $old_chain = $chain;
+			$chain = sub {
+				$old_chain->(
+					defined($_[0])?$_[0]:&Time::HiRes::time,
+					@_[1..$#_],
+				       );
+			};
+		}
 	}
+
+	$chain;
+}
+
+sub _curry_epoch {
+	my $class = shift;
+	my $name = shift;
+	my $arg_h = shift;
+	my $col_h = shift;
+
+	my $chain = \&$name;
+
+	if ( defined $arg_h->{hires} or defined $col_h->{defaults}{hires} ) {
+		my $hires = defined $arg_h->{hires} ?
+			$arg_h->{hires} : $col_h->{defaults}{hires};
+		if ( $hires ) {
+			require Time::HiRes;
+			my $old_chain = $chain;
+			$chain = sub {
+				if ( @_ ) {
+					$old_chain->(@_);
+				}
+				else {
+					return &Time::HiRes::time;
+				}
+			};
+		}
+	}
+
+	$chain;
 }
 
 use Sub::Exporter -setup =>
 	{ exports =>
-	  [ qw(offset_s epoch timestamp posixtime epochtz),
+	  [ qw(offset_s timestamp posixtime epochtz),
+	    epoch => \&_curry_epoch,
 	    map { ($_ => \&_curry) } qw(zone timestamptz gmtimestamptz),
 	  ],
 	  groups =>
@@ -96,7 +147,7 @@ use Sub::Exporter -setup =>
 subtype "TimestampTZ"
 	=> as "Str"
 	=> where {
-		m{^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:[\-+]\d{4}|Z)$}
+		m{^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[\-+]\d{4}|Z)$}
 			and do {
 				my $x;
 				eval { $x = epoch($_) };
@@ -141,6 +192,9 @@ sub timestamptz {
 	defined($time)||($time = time);
 	my $use_z = shift;
 	my @lt = localtime($time);
+	if ( int($time) != $time ) {
+		$lt[0] += $time - int($time);
+	}
 	my $offset_s = timegm(@lt) - $time;
 	timestamp(@lt).zone($offset_s, $use_z);
 }
@@ -150,6 +204,9 @@ sub gmtimestamptz {
 	defined($time)||($time = time);
 	my $use_z = shift;
 	my @gt = gmtime($time);
+	if ( int($time) != $time ) {
+		$gt[0] += $time - int($time);
+	}
 	timestamp(@gt).zone(0, $use_z);
 }
 
@@ -159,8 +216,10 @@ sub epochtz {
 		($timestamptz =~ m{^(.*)([\-+]\d{2}(?::?\d{2})?|Z)$}x)
 		or die "bad TimestampTZ passed to epoch: '$timestamptz'";
 	my @wct = posixtime($timestamp);
+	my $frac = $wct[0] - int($wct[0]);
+	$wct[0] = int($wct[0]);
 	my $offset_s = offset_s($zone);
-	(timegm(@wct) - $offset_s, $offset_s);
+	(timegm(@wct) - $offset_s + $frac, $offset_s);
 }
 
 sub epoch {
@@ -177,9 +236,11 @@ sub _looks_like_timestamp {
 	}
 	elsif ( eval { valid_posixtime(posixtime($_)) } and !$@ ) {
 		my @gt = posixtime($_);
+		my $frac = $gt[0] - int($gt[0]);
+		$gt[0] = int($gt[0]);
 		my $gmtime = timegm(@gt);
 		my $localtime = timelocal(@gt);
-		$epoch = $localtime;
+		$epoch = $localtime + $frac;
 		$off = ($localtime - $gmtime);
 	}
 	else {
@@ -194,7 +255,7 @@ sub _looks_like_timestamp {
 }
 
 coerce 'time_t'
-	=> from "Int"
+	=> from "Num"
 	=> via { $_ },
 	=> from "TimestampTZ"
 	=> via { epoch($_) }
@@ -203,7 +264,13 @@ coerce 'time_t'
 
 coerce 'Timestamp'
 	=> from "TimestampTZ"
-	=> via { timestamp(localtime(epoch($_))) };
+	=> via {
+		my $epoch = epoch($_);
+		my $frac = $epoch - int($epoch);
+		my @lt = localtime(int($epoch));
+		$lt[0] += $frac;
+		timestamp(@lt);
+	};
 
 # traditionally, coercing a timestamp to one with time zone and back
 # uses the local time, with the resultant ambiguities
@@ -213,11 +280,19 @@ coerce 'TimestampTZ'
 	=> from "time_t"
 	=> via { timestamptz($_) }
 	=> from "Timestamp"
-	=> via { timestamptz(timelocal(posixtime($_))) },
+	=> via {
+		my @lt = posixtime($_);
+		my $frac = $lt[0] - int($lt[0]);
+		$lt[0] = int($lt[0]);
+		timestamptz(timelocal(@lt)+$frac);
+	},
 	=> from "Str"
 	=> via {
 		my ($epoch, $off) = _looks_like_timestamp;
-		timestamp(gmtime($epoch+$off)).zone($off);
+		my $frac = $epoch - int($epoch);
+		my @gt = gmtime(int($epoch)+$off);
+		$gt[0] += $frac;
+		timestamp(@gt).zone($off);
 	};
 
 =head1 FUNCTIONS
@@ -309,6 +384,9 @@ With the above, if you set C<created> to a time_t value, it will
 automatically get converted into a TimestampTZ in the current time
 zone.
 
+A TimestampTZ value with a fractional second part is considered valid,
+regardless of whether C<hires> is passed to the importer.
+
 B<New in 0.07>: Timestamp to TimestampTZ conversion now happens in
 I<local time>, not UTC.
 
@@ -316,7 +394,8 @@ I<local time>, not UTC.
 
 C<time_t> is a nicer way of writing an epoch time.  If you set
 C<coerce =E<gt> 1> on your accessors, then you can happily pass in
-timestamps.
+timestamps.  As of MooseX::Timestamp 0.07, B<time_t> is a C<Num>, not
+merely an C<Int>.
 
 =head1 EXPORTS
 

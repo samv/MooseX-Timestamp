@@ -94,6 +94,8 @@ is($obj->stamp, "2007-01-04 12:00:00+0143", "funny time zones OK");
 $obj->stamp("2007-01-04 12:00:00+01:43");
 is($obj->stamp, "2007-01-04 12:00:00+0143", "funny time zones OK II");
 
+is(epoch("1970-01-01 00:01:01.001Z"), 61.001, "epoch(Z) w/ms");
+
 SKIP:{
 	local($TODO) = "Moose coercion rules sort badly";
 	eval { $obj->local($obj->stamp) };

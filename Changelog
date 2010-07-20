@@ -1,3 +1,10 @@
+2010-07-20  Sam Vilain  <sam@vilain.net>
+
+	* MooseX::Timestamp 0.07
+	* Timestamp to TimestampTZ coerce rule now assumes local time, not
+	  UTC.
+	* All functions now support high-resolution timestamps.
+
 2010-07-06  Sam Vilain  <sam@vilain.net>
 
 	* MooseX::Timestamp 0.06

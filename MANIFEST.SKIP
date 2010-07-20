@@ -6,3 +6,4 @@ MANIFEST.SKIP
 ^blib/
 ^pm_to_blib$
 ^[^/]*\.tar.\w+$
+debian/

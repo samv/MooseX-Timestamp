@@ -36,7 +36,10 @@ MooseX::Timestamp - simple timestamp type for Moose
 
 =head1 DESCRIPTION
 
-Tired of bulky date modules?  Don't put up with them any longer.
+This module provides a timestamp type as a Str subtype for Moose.
+This is a much more lightweight format than, say, L<DateTime>, with
+the disadvantage that it does not support native operations on the
+dates.
 
 This module provides floating dates on the Gregorian calendar without
 much code.  It operates in (one or two particular variants of)
@@ -183,19 +186,19 @@ by using the C<coerce =E<gt> 1> flag on a Moose attribute declaration:
 
   package Widget;
   use MooseX::Timestamp;
-  has 'created' =>
+  has 'created' => (
           isa => Timestamp,
           is => "rw",
-          coerce => 1;
+          coerce => 1,
+          );
 
   package main;
   my $widget = new Widget;
   $widget->created("2007-12-07");
   print $widget->created;  # 2007-12-07 00:00:00
 
-With the above, if you set C<created> to a value such as
-automatically get converted into a TimestampTZ in the current time
-zone.
+With the above, if you set C<created> to a value such as automatically
+get converted into a Timestamp in the current time zone.
 
 =head2 EXPORTS
 
